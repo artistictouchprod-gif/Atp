@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Artistic Touch Production — ATP v1 (Site123)</title>
+<style>
+  /* ====== Palette & Basic ====== */
+  :root{
+    --bg:#0f0b16;
+    --panel:#17121b;
+    --accent:#6a00ff; /* purple */
+    --accent-2:#d4b24a; /* gold */
+    --muted:#bfb8c6;
+    --glass: rgba(255,255,255,0.03);
+    --neon: 0 0 12px rgba(106,0,255,0.25);
+    --transition: all .28s cubic-bezier(.2,.9,.3,1);
+  }
+  html,body{height:100%;background:linear-gradient(180deg,#07050a 0%, #120a18 60%); color:#eee; font-family: "Segoe UI", Tahoma, Arial, "Noto Naskh Arabic"; margin:0; -webkit-font-smoothing:antialiased;}
+  a{color:var(--accent); text-decoration:none}
+  .container{max-width:1100px;margin:18px auto;padding:18px;}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#5b00b8);box-shadow:var(--neon);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px}
+  h1{margin:0;font-size:18px}
+  p.lead{margin:0;color:var(--muted);font-size:13px}
+  /* ====== Card & Layouts ====== */
+  .card{background:linear-gradient(180deg,var(--panel), rgba(255,255,255,0.01)); border-radius:12px;padding:14px; box-shadow: 0 6px 24px rgba(4,2,8,0.6); border:1px solid rgba(255,255,255,0.03);}
+  .row{display:flex;gap:14px;align-items:flex-start}
+  .col{flex:1}
+  .side{width:340px}
+  button, .btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:none;cursor:pointer;transition:var(--transition);box-shadow:var(--neon)}
+  .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);box-shadow:none}
+  .btn.danger{background:#a33131}
+  input, select, textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-top:8px}
+  label{font-size:13px;color:var(--muted);display:block;margin-top:10px}
+  small.hint{color:var(--muted);font-size:12px;display:block;margin-top:6px}
+  /* ====== Login / Register ====== */
+  .auth {display:flex;gap:12px;align-items:center}
+  .role-pill{padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.02);cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
+  .role-pill.active{background:linear-gradient(90deg,var(--accent),#8b3bff);box-shadow:var(--neon)}
+  /* ====== Horizontal ticker ====== */
+  .ticker{overflow:hidden;white-space:nowrap;padding:10px 12px;border-radius:12px;background:linear-gradient(90deg, rgba(106,0,255,0.06), rgba(212,178,74,0.02));border:1px solid rgba(255,255,255,0.02)}
+  .ticker-inner{display:inline-block;padding-left:8px;transform:translateY(0);transition:transform .5s}
+  .freelancer-pill{display:inline-block;margin:0 10px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.03)}
+  /* ====== Dashboards ====== */
+  .grid{display:grid;grid-template-columns:1fr 380px;gap:14px}
+  .list{max-height:420px;overflow:auto;padding:6px}
+  .item{padding:10px;border-radius:10px;margin-bottom:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));border:1px solid rgba(255,255,255,0.02)}
+  .muted{color:var(--muted)}
+  .accent-tag{display:inline-block;padding:4px 8px;border-radius:6px;background:linear-gradient(90deg,var(--accent),#7b2bff);font-weight:600}
+  .small-caption{font-size:12px;color:var(--muted)}
+  /* ====== responsive ====== */
+  @media(max-width:980px){ .row{flex-direction:column} .side{width:100%} .grid{grid-template-columns:1fr} .container{padding:12px} }
+  /* ====== small niceties ====== */
+  .center{display:flex;align-items:center;justify-content:center}
+  .tiny{font-size:12px}
+  .danger{background:#9b1b1b}
+  .link-like{background:transparent;border:none;color:var(--accent);text-decoration:underline;cursor:pointer;padding:0}
+  /* scrollbar */
+  .list::-webkit-scrollbar{height:8px;width:8px}
+  .list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.04);border-radius:8px}
+</style>
+</head>
+<body>
+<div class="container" id="app-root">
+  <header>
+    <div class="brand">
+      <div class="logo">ATP</div>
+      <div>
+        <h1>Artistic Touch Production — ATP v1</h1>
+        <p class="lead">نسخة Demo جاهزة للعرض على Site123 — كافة النماذج مفعّلة</p>
+      </div>
+    </div>
+
+    <div id="top-controls" class="card auth" style="display:flex;align-items:center;gap:8px;">
+      <div id="session-info" style="min-width:220px">
+        <!-- dynamic -->
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="open-login" class="btn">تسجيل / دخول</button>
+        <button id="logout-btn" class="btn secondary" style="display:none">خروج</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Ticker -->
+  <div class="card ticker" style="margin-bottom:12px">
+    <strong class="tiny muted">فنانينا المميزون:</strong>
+    <div style="height:36px;display:inline-block;vertical-align:middle;margin-left:12px">
+      <div id="freelancer-ticker" class="ticker-inner"></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- MAIN -->
+    <main class="card" id="main-card">
+      <!-- HOME -->
+      <div id="home-view">
+        <h3>مرحبًا بك في ATP — النسخة التجريبية</h3>
+        <p class="muted">تصفّح العروض، راجع المشاريع القابلة للاستثمار، أو سجّل كفريلانسر أو أدمن لبدء إدارة الإنتاجات.</p>
+        <hr style="margin:14px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+        <div class="row">
+          <div class="col card">
+            <h4>عروض الإنتاج الحالية</h4>
+            <div id="offers-list" class="list"></div>
+            <div style="margin-top:8px" class="center">
+              <button id="btn-show-all-offers" class="btn secondary">تحديث / عرض الكل</button>
+            </div>
+          </div>
+
+          <aside class="side card">
+            <h4>مشاريع قابلة للاستثمار</h4>
+            <div id="projects-list" class="list"></div>
+            <div style="margin-top:8px">
+              <button id="btn-open-project-form" class="btn">إضافة مشروع للاستثمار</button>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- ADMIN -->
+      <div id="admin-view" style="display:none">
+        <h3>لوحة الأدمن — إدارة الإنتاج</h3>
+        <div class="row" style="margin-top:8px">
+          <div class="col">
+            <div class="card">
+              <strong>عروض الإنتاج (اضف / عدل)</strong>
+              <div id="admin-offers" class="list" style="margin-top:8px"></div>
+              <div style="margin-top:8px">
+                <button id="btn-admin-add-offer" class="btn">إضافة عرض جديد</button>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <strong>مشاريع قيد المراجعة</strong>
+              <div id="admin-pending-projects" class="list"></div>
+            </div>
+          </div>
+
+          <aside class="side">
+            <div class="card">
+              <strong>المشرف</strong>
+              <p class="muted tiny">تفعيل/إيقاف الذكاء الاصطناعي وادارة كلمة مرور الأدمن</p>
+              <div style="margin-top:10px">
+                <label>AI محلي مفعل؟</label>
+                <select id="admin-ai-toggle">
+                  <option value="on">مفعل</option>
+                  <option value="off">معطل</option>
+                </select>
+                <label>تغيير كلمة المرور</label>
+                <input id="admin-change-pass" placeholder="كلمة مرور جديدة" />
+                <div style="margin-top:8px">
+                  <button id="btn-change-admin-pass" class="btn">حفظ</button>
+                </div>
+              </div>
+            </div>
+            <div class="card" style="margin-top:12px">
+              <strong>قائمة الفريلانسرز</strong>
+              <div id="admin-freelancers" class="list"></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- FREELANCER -->
+      <div id="freelancer-view" style="display:none">
+        <h3>لوحة الفريلانسر</h3>
+        <div class="row">
+          <div class="col">
+            <div class="card">
+              <strong>ملفك الشخصي</strong>
+              <div style="margin-top:8px">
+                <label>الاسم الكامل</label>
+                <input id="fr-name" />
+                <label>التخصص</label>
+                <input id="fr-role" />
+                <label>معرض الأعمال (رابط أو وصف)</label>
+                <textarea id="fr-portfolio" rows="3"></textarea>
+                <label>تغيير كلمة المرور</label>
+                <input id="fr-pass" placeholder="اتركه فارغًا إن لم تغير" />
+                <div style="margin-top:8px" class="row">
+                  <button id="btn-save-profile" class="btn">حفظ الملف</button>
+                  <button id="btn-delete-account" class="btn secondary danger">حذف الحساب</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <strong>أدوات الذكاء الاصطناعي - حساب الميزانية</strong>
+              <div style="margin-top:8px">
+                <label>نوع المشروع</label>
+                <select id="ai-project-type">
+                  <option>فيلم</option>
+                  <option>مهرجان</option>
+                  <option>فيديو كليب</option>
+                  <option>إعلان</option>
+                </select>
+                <label>عدد المشاركين (طاقم + ممثلين)</label>
+                <input id="ai-participants" type="number" value="5" />
+                <label>مدة الإنتاج (أيام)</label>
+                <input id="ai-duration" type="number" value="7" />
+                <label>نوع المعدات (basic / medium / pro)</label>
+                <select id="ai-equipment">
+                  <option>basic</option>
+                  <option selected>medium</option>
+                  <option>pro</option>
+                </select>
+                <label>الموقع (مدينة/ولاية)</label>
+                <input id="ai-location" placeholder="الجزائر، الجزائر العاصمة" />
+                <div style="margin-top:8px" class="row">
+                  <button id="btn-run-ai" class="btn">تشغيل الـ AI (محدود)</button>
+                  <button id="btn-run-ai-pro" class="btn secondary">نسخة Pro (تفصيلي)</button>
+                </div>
+                <div id="ai-result" style="margin-top:12px" class="card"></div>
+              </div>
+            </div>
+
+          </div>
+
+          <aside class="side">
+            <div class="card">
+              <strong>مكتب العروض</strong>
+              <div id="fr-available-offers" class="list"></div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <strong>مشروعاتي المرفوعة</strong>
+              <div id="fr-my-projects" class="list"></div>
+              <div style="margin-top:8px">
+                <button id="btn-add-my-project" class="btn">رفع مشروع للاستثمار</button>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+      </div>
+
+      <!-- GUEST -->
+      <div id="guest-view" style="display:none">
+        <h3>عرض الزائر</h3>
+        <p class="muted">يمكن للزائر تصفح أسماء الفريلانسرز والعروض والمشاريع المنشورة المقبولة. لرفع مشروع جديد يُطلب التسجيل أو الإرسال ليتم المراجعة من الأدمن.</p>
+
+        <div class="row" style="margin-top:8px">
+          <div class="col card">
+            <h4>العروض المتاحة</h4>
+            <div id="guest-offers" class="list"></div>
+          </div>
+
+          <aside class="side card">
+            <h4>مشاريع قابلة للاستثمار</h4>
+            <div id="guest-projects" class="list"></div>
+            <div style="margin-top:8px">
+              <button id="btn-guest-add-project" class="btn">أرسل مشروعك للمراجعة</button>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- RIGHT / INFO -->
+    <aside class="card">
+      <h4>معلومات سريعة</h4>
+      <p class="muted tiny">واجهة عمل محلية — لحفظ البيانات بين جلسات التصفح نستخدم localStorage. لا تستخدم هذا النظام في الإنتاج بدون back-end وآليات أمان.</p>
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03)">
+      <div id="quick-stats"></div>
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin-top:10px">
+      <div class="small-caption">الإصدار: ATP v1 — Demo</div>
+    </aside>
+  </div>
+</div>
+
+<!-- Modals root -->
+<div id="modal-root"></div>
+
+<script>
+/* ===========================================================
+   ATP v1 — Single-file Frontend Demo for Site123
+   FULL: Admin, Freelancer, Guest, Offers, Projects, Local AI
+   ===========================================================*/
+
+/* ---------------- Utilities ---------------- */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const uid = (p='id') => p + Math.random().toString(36).slice(2,9);
+const STORAGE_KEY = 'atp_data_v1_site123';
+const SESSION_KEY = 'atp_session_v1_site123';
+
+function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); }
+function loadData(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(!raw) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
+    return JSON.parse(JSON.stringify(defaultData));
+  }
+  try { return JSON.parse(raw); } catch(e){ localStorage.removeItem(STORAGE_KEY); localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData)); return JSON.parse(JSON.stringify(defaultData)); }
+}
+function saveSession(){ localStorage.setItem(SESSION_KEY, JSON.stringify(SESSION)); }
+function loadSession(){ const s = localStorage.getItem(SESSION_KEY); return s ? JSON.parse(s) : null; }
+function clearSession(){ localStorage.removeItem(SESSION_KEY); }
+
+/* ---------------- Initial data ---------------- */
+const defaultData = {
+  admin: { username: 'admin', password: 'admin123', aiEnabled: true },
+  freelancers: [
+    { id: uid('fr'), name: 'ليلى منصور', role: 'مخرجة', portfolio: 'رابط معرض 1', password:'pass1' },
+    { id: uid('fr'), name: 'سامر خلف', role: 'مصور سينمائي', portfolio: 'رابط معرض 2', password:'pass2' },
+    { id: uid('fr'), name: 'نور سعيد', role: 'مونتير', portfolio: 'رابط معرض 3', password:'pass3' },
+    { id: uid('fr'), name: 'رامي الجابري', role: 'منتج', portfolio: 'رابط معرض 4', password:'pass4' },
+    { id: uid('fr'), name: 'هالة مراد', role: 'ممثلة', portfolio: 'رابط معرض 5', password:'pass5' },
+    { id: uid('fr'), name: 'يوسف بلخير', role: 'مصمم صوت', portfolio: 'رابط معرض 6', password:'pass6' }
+  ],
+  offers: [
+    { id: uid('of'), title:'مهرجان الفيلم القصير — العاصمة', type:'مهرجان', region:'الجزائر العاصمة', durationDays:3, desc:'دعوة لفريق انتاج', createdAt: Date.now() - 86400000*10 },
+    { id: uid('of'), title:'فيديو كليب لفنان محلي', type:'فيديو كليب', region:'وهران', durationDays:2, desc:'مطلوب تصوير ومونتاج', createdAt: Date.now() - 86400000*6 }
+  ],
+  projects: [
+    { id: uid('pr'), title:'فيلم قصير عن المدينة', owner:'زائر', ownerId:null, summary:'قصة قصيرة... ', images:[], status:'accepted', createdAt: Date.now() - 86400000*2 },
+  ]
+};
+
+let DATA = loadData();
+let SESSION = loadSession();
+
+/* ---------------- UI renderers ---------------- */
+function escapeHtml(s){ if(!s) return ''; return (''+s).replaceAll && s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') || s; }
+
+function renderTopControls(){
+  const el = $('#session-info');
+  if(!SESSION){
+    el.innerHTML = `<div class="muted tiny">لم يتم تسجيل الدخول</div>`;
+    $('#logout-btn').style.display='none';
+  } else {
+    $('#logout-btn').style.display='inline-block';
+    if(SESSION.role==='admin') {
+      el.innerHTML = `<div><strong>المشرف:</strong> ${escapeHtml(SESSION.username)}</div><div class="muted tiny">دور: أدمن</div>`;
+    } else if(SESSION.role==='freelancer'){
+      const fr = DATA.freelancers.find(f=>f.id===SESSION.id);
+      el.innerHTML = `<div><strong>${escapeHtml(fr?.name || SESSION.username)}</strong></div><div class="muted tiny">${escapeHtml(fr?.role || '')}</div>`;
+    } else {
+      el.innerHTML = `<div><strong>زائر</strong></div><div class="muted tiny">عرض محدود</div>`;
+    }
+  }
+}
+
+function renderTicker(){
+  const out = $('#freelancer-ticker');
+  out.innerHTML = '';
+  DATA.freelancers.forEach(f=>{
+    const s = document.createElement('span');
+    s.className='freelancer-pill';
+    s.textContent = `${f.name} — ${f.role}`;
+    out.appendChild(s);
+  });
+  if(window._tickerInterval) clearInterval(window._tickerInterval);
+  window._tickerInterval = setInterval(()=>{
+    const first = out.firstElementChild;
+    if(first) { out.appendChild(first.cloneNode(true)); first.remove(); }
+  }, 5000);
+}
+
+function renderOffersList(targetId){
+  const container = document.getElementById(targetId); if(!container) return;
+  container.innerHTML = '';
+  DATA.offers.slice().sort((a,b)=>b.createdAt-a.createdAt).forEach(o=>{
+    const div = document.createElement('div'); div.className='item';
+    div.innerHTML = `<strong>${escapeHtml(o.title)}</strong> <div class="muted tiny">${escapeHtml(o.type)} — ${escapeHtml(o.region)} — ${o.durationDays} يوم</div><p class="muted tiny">${escapeHtml(o.desc)}</p>`;
+    container.appendChild(div);
+  });
+}
+
+function renderProjectsList(targetId, onlyAccepted=false){
+  const container = document.getElementById(targetId); if(!container) return;
+  container.innerHTML = '';
+  DATA.projects.slice().sort((a,b)=>b.createdAt-a.createdAt).forEach(p=>{
+    if(onlyAccepted && p.status!=='accepted') return;
+    const div = document.createElement('div'); div.className='item';
+    div.innerHTML = `<strong>${escapeHtml(p.title)}</strong> <div class="muted tiny">by ${escapeHtml(p.owner)} — ${escapeHtml(p.status)}</div><p class="muted tiny">${escapeHtml(p.summary)}</p>`;
+    container.appendChild(div);
+  });
+}
+
+function renderQuickStats(){
+  $('#quick-stats').innerHTML = `<div class="muted tiny">فريلانسرز: ${DATA.freelancers.length}</div>
+  <div class="muted tiny">عروض: ${DATA.offers.length}</div>
+  <div class="muted tiny">مشاريع: ${DATA.projects.length}</div>`;
+}
+
+function renderAdminPanel(){
+  const offersContainer = $('#admin-offers'); offersContainer.innerHTML = '';
+  DATA.offers.forEach(o=>{
+    const it = document.createElement('div'); it.className='item';
+    it.innerHTML = `<strong>${escapeHtml(o.title)}</strong><div class="muted tiny">${escapeHtml(o.type)} — ${escapeHtml(o.region)}</div><div style="margin-top:8px">
+      <button data-id="${o.id}" class="btn btn-edit-offer">تعديل</button>
+      <button data-id="${o.id}" class="btn secondary btn-del-offer">حذف</button>
+    </div>`;
+    offersContainer.appendChild(it);
+  });
+
+  const pending = $('#admin-pending-projects'); pending.innerHTML = '';
+  DATA.projects.filter(p=>p.status==='pending').forEach(p=>{
+    const it = document.createElement('div'); it.className='item';
+    it.innerHTML = `<strong>${escapeHtml(p.title)}</strong><div class="muted tiny">من: ${escapeHtml(p.owner)}</div><p class="muted tiny">${escapeHtml(p.summary)}</p>
+      <div style="margin-top:8px">
+        <button data-id="${p.id}" class="btn btn-accept-project">قبول ونشر</button>
+        <button data-id="${p.id}" class="btn secondary btn-reject-project">رفض</button>
+      </div>`;
+    pending.appendChild(it);
+  });
+
+  const fl = $('#admin-freelancers'); fl.innerHTML='';
+  DATA.freelancers.forEach(f=>{
+    const it=document.createElement('div');it.className='item';
+    it.innerHTML = `<strong>${escapeHtml(f.name)}</strong><div class="muted tiny">${escapeHtml(f.role)}</div><p class="muted tiny">${escapeHtml(f.portfolio)}</p>
+      <div style="margin-top:8px">
+        <button data-id="${f.id}" class="btn btn-edit-fr">تعديل</button>
+        <button data-id="${f.id}" class="btn secondary btn-del-fr">حذف</button>
+      </div>`;
+    fl.appendChild(it);
+  });
+
+  // set admin ai toggle UI
+  $('#admin-ai-toggle').value = DATA.admin.aiEnabled ? 'on' : 'off';
+}
+
+function renderFreelancerPanel(){
+  const offersEl = $('#fr-available-offers'); offersEl.innerHTML = '';
+  DATA.offers.forEach(o=>{
+    const it=document.createElement('div'); it.className='item';
+    it.innerHTML = `<strong>${escapeHtml(o.title)}</strong><div class="muted tiny">${escapeHtml(o.type)} — ${escapeHtml(o.region)}</div><p class="muted tiny">${escapeHtml(o.desc)}</p>
+      <div style="margin-top:6px"><button data-id="${o.id}" class="btn btn-apply-offer">تقديم عرضي الفني</button></div>`;
+    offersEl.appendChild(it);
+  });
+
+  const myProj = $('#fr-my-projects'); myProj.innerHTML = '';
+  if(!SESSION || SESSION.role!=='freelancer') return;
+  const userId = SESSION.id;
+  DATA.projects.filter(p=>p.ownerId===userId).forEach(p=>{
+    const it=document.createElement('div'); it.className='item';
+    it.innerHTML = `<strong>${escapeHtml(p.title)}</strong><div class="muted tiny">${escapeHtml(p.status)}</div><p class="muted tiny">${escapeHtml(p.summary)}</p>`;
+    myProj.appendChild(it);
+  });
+
+  const fr = DATA.freelancers.find(f=>f.id===SESSION.id);
+  if(fr){
+    $('#fr-name').value = fr.name;
+    $('#fr-role').value = fr.role;
+    $('#fr-portfolio').value = fr.portfolio;
+    $('#fr-pass').value = '';
+  }
+}
+
+function renderGuestView(){
+  renderOffersList('guest-offers');
+  renderProjectsList('guest-projects', true);
+}
+
+/* ---------------- Navigation ---------------- */
+function showViewForSession(){
+  $('#home-view').style.display='none';
+  $('#admin-view').style.display='none';
+  $('#freelancer-view').style.display='none';
+  $('#guest-view').style.display='none';
+
+  if(!SESSION){
+    $('#home-view').style.display='block';
+  } else {
+    if(SESSION.role==='admin') {
+      $('#admin-view').style.display='block';
+      renderAdminPanel();
+    } else if(SESSION.role==='freelancer'){
+      $('#freelancer-view').style.display='block';
+      renderFreelancerPanel();
+    } else {
+      $('#guest-view').style.display='block';
+    }
+  }
+  renderTopControls();
+  renderQuickStats();
+  renderOffersList('offers-list');
+  renderProjectsList('projects-list', true);
+  renderOffersList('admin-offers');
+  renderOffersList('fr-available-offers');
+  renderOffersList('guest-offers');
+  renderProjectsList('guest-projects', true);
+}
+
+/* ---------------- Modal ---------------- */
+function openModal(html){
+  const root = document.getElementById('modal-root');
+  root.innerHTML = '';
+  const overlay = document.createElement('div');
+  overlay.style.position='fixed';overlay.style.left=0;overlay.style.top=0;overlay.style.right=0;overlay.style.bottom=0;
+  overlay.style.background='rgba(0,0,0,0.6)';overlay.style.display='flex';overlay.style.alignItems='center';
+  overlay.style.justifyContent='center';overlay.style.zIndex=9998;padding:16px;
+  const box = document.createElement('div');
+  box.className='card';
+  box.style.minWidth='320px'; box.style.maxWidth='880px'; box.innerHTML = html;
+  overlay.appendChild(box);
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeModal(); });
+  root.appendChild(overlay);
+  return root;
+}
+function closeModal(){ document.getElementById('modal-root').innerHTML = ''; }
+
+/* ---------------- Auth ---------------- */
+function openAuthModal(){
+  openModal(`
+    <h3>تسجيل / دخول</h3>
+    <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
+      <div style="flex:1;min-width:260px">
+        <label>اختر دور</label>
+        <select id="auth-role">
+          <option value="freelancer">فريلانسر</option>
+          <option value="admin">أدمن</option>
+          <option value="guest">زائر</option>
+        </select>
+        <label>اسم المستخدم / الاسم</label>
+        <input id="auth-username" />
+        <label>كلمة المرور</label>
+        <input id="auth-password" />
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+          <button id="btn-auth-login" class="btn">تسجيل / دخول</button>
+          <button id="btn-auth-register" class="btn secondary">تسجيل حساب جديد</button>
+          <button id="btn-auth-close" class="btn secondary">إغلاق</button>
+        </div>
+        <small class="hint">ملاحظة: هذا نموذج تجريبي بدون خادم؛ البيانات تحفظ محليًا في المتصفح.</small>
+      </div>
+      <div style="width:280px;padding:8px;background:rgba(255,255,255,0.02);border-radius:8px">
+        <strong>حساب الأدمن الافتراضي</strong>
+        <div class="muted tiny">اسم المستخدم: admin</div>
+        <div class="muted tiny">كلمة المرور: admin123</div>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03)">
+        <strong>حسابات الفريلانسر المفعلة (مثال)</strong>
+        <div class="muted tiny">${DATA.freelancers.map(f=>`${escapeHtml(f.name)} (${escapeHtml(f.password)})`).join('<br>')}</div>
+      </div>
+    </div>
+  `);
+
+  $('#btn-auth-close').onclick = closeModal;
+  $('#btn-auth-login').onclick = handleLogin;
+  $('#btn-auth-register').onclick = handleRegister;
+}
+
+function handleLogin(){
+  const role = $('#auth-role').value;
+  const username = $('#auth-username').value.trim();
+  const password = $('#auth-password').value;
+  if(!username){ showToast('أدخل اسم المستخدم'); return; }
+
+  if(role==='admin'){
+    if(username === DATA.admin.username && password === DATA.admin.password){
+      SESSION = { role:'admin', username: DATA.admin.username };
+      saveSession(); closeModal(); showToast('تم تسجيل الدخول كأدمن'); showViewForSession();
+    } else { showToast('بيانات الأدمن غير صحيحة'); }
+    return;
+  }
+
+  if(role==='freelancer'){
+    const fr = DATA.freelancers.find(f=> (f.name===username || f.id===username) && f.password===password );
+    if(fr){
+      SESSION = { role:'freelancer', id: fr.id, username: fr.name };
+      saveSession(); closeModal(); showToast('تم تسجيل الدخول كفريلانسر'); showViewForSession();
+    } else { showToast('بيانات الفريلانسر غير صحيحة'); }
+    return;
+  }
+
+  if(role==='guest'){
+    SESSION = { role:'guest', username: username || 'زائر' };
+    saveSession(); closeModal(); showToast('مسجل كزائر'); showViewForSession();
+  }
+}
+
+function handleRegister(){
+  const role = $('#auth-role').value;
+  const username = $('#auth-username').value.trim();
+  const password = $('#auth-password').value;
+
+  if(role==='admin'){ showToast('لا يمكن إنشاء حساب أدمن من الواجهة'); return; }
+
+  if(role==='freelancer'){
+    if(!username || !password){ showToast('الاسم وكلمة المرور مطلوبان'); return; }
+    const newFr = { id: uid('fr'), name: username, role: 'مبدع', portfolio:'', password };
+    DATA.freelancers.push(newFr);
+    saveData();
+    SESSION = { role:'freelancer', id: newFr.id, username: newFr.name };
+    saveSession();
+    closeModal();
+    showViewForSession();
+    showToast('تم إنشاء حساب فريلانسر وتسجيل الدخول');
+    renderTicker();
+    return;
+  }
+
+  if(role==='guest'){
+    SESSION = { role:'guest', username: username || 'زائر' };
+    saveSession();
+    closeModal();
+    showViewForSession();
+    showToast('مسجل كزائر');
+  }
+}
+
+/* ---------------- Admin actions ---------------- */
+function adminAddOffer(){
+  openModal(`<h3>إضافة عرض إنتاج</h3>
+    <label>العنوان</label><input id="offer-title" />
+    <label>النوع</label><input id="offer-type" placeholder="مهرجان / فيلم / فيديو كليب" />
+    <label>المنطقة</label><input id="offer-region" />
+    <label>مدة بالأيام</label><input id="offer-duration" type="number" value="1" />
+    <label>الوصف</label><textarea id="offer-desc" rows="3"></textarea>
+    <div style="margin-top:8px"><button id="btn-save-offer" class="btn">حفظ العرض</button><button id="btn-cancel" class="btn secondary">إغلاق</button></div>`);
+
+  $('#btn-save-offer').onclick = ()=>{
+    const o = {
+      id: uid('of'),
+      title: $('#offer-title').value || 'عرض جديد',
+      type: $('#offer-type').value || 'عام',
+      region: $('#offer-region').value || 'غير محدد',
+      durationDays: Number($('#offer-duration').value) || 1,
+      desc: $('#offer-desc').value || '',
+      createdAt: Date.now()
+    };
+    DATA.offers.push(o); saveData(); closeModal(); renderAdminPanel(); renderOffersList('offers-list'); renderOffersList('admin-offers'); renderOffersList('fr-available-offers');
+    showToast('تمت إضافة العرض');
+  };
+  $('#btn-cancel').onclick = closeModal;
+}
+
+function adminEditOffer(id){
+  const o = DATA.offers.find(x=>x.id===id); if(!o) return;
+  openModal(`<h3>تعديل العرض</h3>
+    <label>العنوان</label><input id="offer-title" value="${escapeHtml(o.title)}" />
+    <label>النوع</label><input id="offer-type" value="${escapeHtml(o.type)}" />
+    <label>المنطقة</label><input id="offer-region" value="${escapeHtml(o.region)}" />
+    <label>مدة بالأيام</label><input id="offer-duration" type="number" value="${o.durationDays}" />
+    <label>الوصف</label><textarea id="offer-desc" rows="3">${escapeHtml(o.desc)}</textarea>
+    <div style="margin-top:8px"><button id="btn-save-offer" class="btn">حفظ</button><button id="btn-cancel" class="btn secondary">إغلاق</button></div>`);
+
+  $('#btn-save-offer').onclick = ()=>{
+    o.title = $('#offer-title').value; o.type = $('#offer-type').value; o.region = $('#offer-region').value; o.durationDays = Number($('#offer-duration').value); o.desc = $('#offer-desc').value;
+    saveData(); closeModal(); renderAdminPanel(); renderOffersList('offers-list'); renderOffersList('admin-offers'); renderOffersList('fr-available-offers'); showToast('تم التحديث');
+  };
+  $('#btn-cancel').onclick = closeModal;
+}
+
+function adminDeleteOffer(id){
+  if(!confirm('هل تريد حذف هذا العرض؟')) return;
+  DATA.offers = DATA.offers.filter(o=>o.id!==id); saveData(); renderAdminPanel(); renderOffersList('offers-list'); renderOffersList('admin-offers'); renderOffersList('fr-available-offers');
+  showToast('تم الحذف');
+}
+
+function adminAcceptProject(id){
+  const p = DATA.projects.find(x=>x.id===id); if(!p) return;
+  p.status='accepted'; saveData(); renderAdminPanel(); renderProjectsList('projects-list', true); renderProjectsList('guest-projects', true); showToast('تم قبول المشروع ونشره');
+}
+
+function adminRejectProject(id){
+  const p = DATA.projects.find(x=>x.id===id); if(!p) return;
+  p.status='rejected'; saveData(); renderAdminPanel(); renderProjectsList('projects-list', true); showToast('تم رفض المشروع');
+}
+
+function adminDeleteFreelancer(id){
+  if(!confirm('هل تريد حذف حساب الفريلانسر؟')) return;
+  DATA.freelancers = DATA.freelancers.filter(f=>f.id!==id); saveData(); renderAdminPanel(); renderTicker(); renderQuickStats(); showToast('تم حذف الفريلانسر');
+}
+
+/* ---------------- Freelancer actions ---------------- */
+function saveFreelancerProfile(){
+  if(!SESSION || SESSION.role!=='freelancer') return;
+  const fr = DATA.freelancers.find(f=>f.id===SESSION.id); if(!fr) return;
+  fr.name = $('#fr-name').value || fr.name;
+  fr.role = $('#fr-role').value || fr.role;
+  fr.portfolio = $('#fr-portfolio').value || fr.portfolio;
+  if($('#fr-pass').value) fr.password = $('#fr-pass').value;
+  saveData();
+  renderTicker();
+  renderTopControls();
+  showToast('تم حفظ الملف');
+}
+
+function deleteAccount(){
+  if(!SESSION || SESSION.role!=='freelancer') return;
+  if(!confirm('هل تريد حذف حسابك؟ هذا الإجراء نهائي')) return;
+  DATA.freelancers = DATA.freelancers.filter(f=>f.id!==SESSION.id);
+  DATA.projects = DATA.projects.filter(p=>p.ownerId!==SESSION.id);
+  saveData();
+  clearSession();
+  SESSION = null;
+  showViewForSession();
+  renderTicker();
+  showToast('تم حذف الحساب');
+}
+
+/* ---------------- Project submission ---------------- */
+function openProjectForm(ownerType='guest', ownerId=null){
+  openModal(`<h3>رفع مشروع للاستثمار</h3>
+    <label>العنوان</label><input id="proj-title" />
+    <label>الملخّص</label><textarea id="proj-summary" rows="4"></textarea>
+    <div style="margin-top:8px"><button id="btn-save-project" class="btn">إرسال للمراجعة</button><button id="btn-cancel" class="btn secondary">إغلاق</button></div>`);
+  $('#btn-save-project').onclick = ()=>{
+    const p = {
+      id: uid('pr'),
+      title: $('#proj-title').value || 'مشروع جديد',
+      summary: $('#proj-summary').value || '',
+      owner: ownerType==='freelancer' ? (DATA.freelancers.find(f=>f.id===ownerId)?.name || 'فريلانسر') : (SESSION?.username || 'زائر'),
+      ownerId: ownerId || null,
+      status: 'pending',
+      createdAt: Date.now()
+    };
+    DATA.projects.push(p); saveData(); closeModal(); renderProjectsList('projects-list', true); renderProjectsList('guest-projects', true); renderAdminPanel();
+    showToast('تم إرسال المشروع للمراجعة من الأدمن');
+  };
+  $('#btn-cancel').onclick = closeModal;
+}
+
+/* ---------------- Local AI Estimator ---------------- */
+function localAIEstimate({projectType, participants, durationDays, equipment, location}, detailed=false){
+  const baseByType = { 'فيلم':3000, 'مهرجان':5000, 'فيديو كليب':2500, 'إعلان':4000 };
+  const typeKey = Object.keys(baseByType).find(k=>projectType.includes(k)) || projectType;
+  const base = baseByType[typeKey] || 2000;
+
+  const eqMul = equipment === 'pro' ? 2.2 : (equipment==='medium' ? 1.4 : 1.0);
+  const perPersonDay = 50;
+  const participantsCost = participants * durationDays * perPersonDay;
+
+  let locFactor = 1.0;
+  if(location && /العاصمة|الجزائر العاصمة/i.test(location)) locFactor = 1.25;
+  if(location && /وهران|قسنطينة|عنابة/i.test(location)) locFactor = 1.1;
+
+  const equipmentCost = base * eqMul;
+  const durationFactor = Math.max(1, durationDays / 3);
+  const risk = Math.min(0.35, participants/50 + (equipment==='pro'?0.15:0));
+
+  const subtotal = (base * durationFactor + equipmentCost + participantsCost) * locFactor;
+  const total = Math.round(subtotal * (1 + risk));
+
+  const breakdown = {
+    base: Math.round(base*durationFactor),
+    equipment: Math.round(equipmentCost),
+    participants: Math.round(participantsCost),
+    locationFactor: locFactor,
+    riskPremiumPercent: Math.round(risk*100),
+    total
+  };
+
+  const suggestions = [];
+  if(equipment==='pro') suggestions.push('فكر بالتحول إلى معدات medium لتقليل التكلفة ~25% إذا لم تكن الحاجة قصوى.');
+  if(participants>20) suggestions.push('تقليل بعض الكادر أو توظيف مشتركات يومية قد يخفض التكلفة.');
+  if(durationDays>10) suggestions.push('إعادة جدولة التصوير لتقليل الأيام غير المنتجة.');
+  if(!detailed) { return { total, brief: `تقدير تقريبي: ${total} وحدة نقدية` }; }
+  return { total, breakdown, suggestions };
+}
+
+/* ---------------- Toast ---------------- */
+function showToast(msg, ms=2200){
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.position='fixed';t.style.right='18px';t.style.bottom='18px';t.style.padding='10px 14px';t.style.background='linear-gradient(90deg,var(--accent),#7b2bff)';t.style.borderRadius='10px';t.style.boxShadow='var(--neon)';t.style.zIndex=9999;
+  document.body.appendChild(t);
+  setTimeout(()=>t.style.opacity='0', ms-300);
+  setTimeout(()=>t.remove(), ms);
+}
+
+/* ---------------- Event delegation ---------------- */
+document.getElementById('open-login').onclick = openAuthModal;
+document.getElementById('btn-show-all-offers').onclick = ()=>{ renderOffersList('offers-list'); renderOffersList('admin-offers'); renderOffersList('fr-available-offers'); showToast('تم التحديث'); };
+document.getElementById('btn-open-project-form').onclick = ()=> {
+  if(!SESSION) { openProjectForm('guest', null); } else if(SESSION.role==='freelancer') openProjectForm('freelancer', SESSION.id); else openProjectForm('admin', null);
+};
+document.getElementById('btn-guest-add-project').onclick = ()=> {
+  if(!SESSION) { openProjectForm('guest', null); } else openProjectForm('guest', null);
+};
+document.getElementById('btn-add-my-project')?.addEventListener('click', ()=> openProjectForm('freelancer', SESSION?.id));
+document.getElementById('btn-admin-add-offer')?.addEventListener('click', adminAddOffer);
+document.getElementById('btn-change-admin-pass')?.addEventListener('click', ()=>{
+  const v = $('#admin-change-pass').value;
+  if(!v) { showToast('أدخل كلمة مرور جديدة'); return; }
+  DATA.admin.password = v; saveData(); showToast('تم تغيير كلمة مرور الأدمن');
+});
+document.getElementById('btn-save-profile')?.addEventListener('click', saveFreelancerProfile);
+document.getElementById('btn-delete-account')?.addEventListener('click', deleteAccount);
+document.getElementById('logout-btn').onclick = ()=>{
+  clearSession(); SESSION=null; showViewForSession(); showToast('تم الخروج');
+};
+
+/* delegated click events */
+document.addEventListener('click', (e)=>{
+  if(e.target.matches('.btn-edit-offer')) adminEditOffer(e.target.dataset.id);
+  if(e.target.matches('.btn-del-offer')) adminDeleteOffer(e.target.dataset.id);
+  if(e.target.matches('.btn-accept-project')) adminAcceptProject(e.target.dataset.id);
+  if(e.target.matches('.btn-reject-project')) adminRejectProject(e.target.dataset.id);
+  if(e.target.matches('.btn-edit-fr')) {
+    const id = e.target.dataset.id; const fr = DATA.freelancers.find(x=>x.id===id);
+    if(!fr) return;
+    openModal(`<h3>تعديل فريلانسر</h3>
+      <label>الاسم</label><input id="edit-fr-name" value="${escapeHtml(fr.name)}" />
+      <label>التخصص</label><input id="edit-fr-role" value="${escapeHtml(fr.role)}" />
+      <label>معرض الأعمال</label><textarea id="edit-fr-portfolio" rows="3">${escapeHtml(fr.portfolio)}</textarea>
+      <div style="margin-top:8px"><button id="btn-save-fr" class="btn">حفظ</button><button id="btn-cancel" class="btn secondary">إغلاق</button></div>`);
+    $('#btn-save-fr').onclick = ()=>{ fr.name = $('#edit-fr-name').value; fr.role = $('#edit-fr-role').value; fr.portfolio = $('#edit-fr-portfolio').value; saveData(); closeModal(); renderAdminPanel(); renderTicker(); showToast('تم التحديث'); };
+    $('#btn-cancel').onclick = closeModal;
+  }
+  if(e.target.matches('.btn-del-fr')) adminDeleteFreelancer(e.target.dataset.id);
+  if(e.target.matches('.btn-apply-offer')){
+    const id = e.target.dataset.id;
+    if(!SESSION || SESSION.role!=='freelancer'){ showToast('سجّل كفريلانسر لتقديم عرضك'); return; }
+    openModal(`<h3>تقديم عرض فني</h3><p class="muted tiny">التقدم للعرض: ${escapeHtml(DATA.offers.find(o=>o.id===id)?.title || '')}</p>
+      <label>مقترحك المختصر</label><textarea id="apply-text" rows="4"></textarea>
+      <div style="margin-top:8px"><button id="btn-send-apply" class="btn">إرسال</button><button id="btn-cancel" class="btn secondary">إغلاق</button></div>`);
+    $('#btn-send-apply').onclick = ()=>{
+      const text = $('#apply-text').value || 'بدون وصف';
+      DATA.projects.push({ id: uid('pr'), title:`عرض من ${SESSION.username} على ${DATA.offers.find(o=>o.id===id)?.title||''}`, summary:text, owner:SESSION.username, ownerId:SESSION.id, status:'pending', createdAt:Date.now()});
+      saveData(); closeModal(); renderFreelancerPanel(); renderAdminPanel(); showToast('تم إرسال عرضك للمراجعة');
+    };
+    $('#btn-cancel').onclick = closeModal;
+  }
+});
+
+/* AI run */
+document.addEventListener('click', (e)=>{
+  if(e.target.id==='btn-run-ai' || e.target.id==='btn-run-ai-pro'){
+    const projectType = $('#ai-project-type').value;
+    const participants = Number($('#ai-participants').value)||1;
+    const durationDays = Number($('#ai-duration').value)||1;
+    const equipment = $('#ai-equipment').value;
+    const location = $('#ai-location').value;
+    const detailed = e.target.id==='btn-run-ai-pro';
+    if(!DATA.admin.aiEnabled){
+      showToast('الذكاء الاصطناعي معطل من الأدمن');
+      return;
+    }
+    const result = localAIEstimate({projectType, participants, durationDays, equipment, location}, detailed);
+    const container = $('#ai-result');
+    if(!detailed){
+      container.innerHTML = `<strong>تقدير تقريبي:</strong> <div style="font-size:18px;margin-top:6px">${result.brief || result.total}</div>`;
+    } else {
+      container.innerHTML = `<strong>تقدير تفصيلي:</strong>
+        <div class="muted tiny">المجموع: ${result.total}</div>
+        <div class="muted tiny">تفاصيل: قاعدة ${result.breakdown.base}, معدات ${result.breakdown.equipment}, مشاركين ${result.breakdown.participants}</div>
+        <div style="margin-top:8px"><strong>اقتراحات:</strong><ul>${result.suggestions.map(s=>`<li class="muted tiny">${s}</li>`).join('')}</ul></div>`;
+    }
+  }
+});
+
+/* keyboard & modal */
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
+/* ---------------- Init ---------------- */
+function init(){
+  DATA = loadData();
+  SESSION = loadSession();
+  renderTicker();
+  renderOffersList('offers-list');
+  renderProjectsList('projects-list', true);
+  renderQuickStats();
+  renderTopControls();
+  showViewForSession();
+
+  // wire admin toggle
+  document.getElementById('admin-ai-toggle')?.addEventListener('change', (ev)=>{
+    DATA.admin.aiEnabled = ev.target.value === 'on';
+    saveData(); showToast('تم تحديث حالة الذكاء الاصطناعي');
+  });
+
+  // periodic save
+  setInterval(()=>{ saveData(); }, 6000);
+}
+
+init();
+</script>
+</body>
+</html>
